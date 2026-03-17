@@ -1,5 +1,8 @@
 {
   "name": "document-agent",
+  "bin": {
+    "doc-agent": "./src/index.ts"
+  },
   "module": "index.ts",
   "type": "module",
   "private": true,
@@ -11,6 +14,7 @@
   },
   "dependencies": {
     "openai": "^6.31.0",
+    "zod": "^4.3.6",
     "zod-to-json-schema": "^3.25.1"
   }
 }
