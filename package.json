@@ -3,7 +3,6 @@
   "bin": {
     "doc-agent": "./src/index.ts"
   },
-  "module": "index.ts",
   "type": "module",
   "private": true,
   "devDependencies": {

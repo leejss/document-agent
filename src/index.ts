@@ -8,24 +8,6 @@ import { createLlmClient } from "./infrastructure/llm/create-llm-client.ts";
 import { ConsoleLogger } from "./infrastructure/logging/console-logger.ts";
 import { SqliteDocumentRunRepository } from "./infrastructure/persistence/sqlite-document-run-repository.ts";
 
-export * from "./application/ports/document-run-repository.ts";
-export * from "./application/ports/llm-client.ts";
-export * from "./application/ports/logger.ts";
-export * from "./application/services/cli-parser.ts";
-export * from "./application/services/document-agent.ts";
-export * from "./application/services/scheduler.ts";
-export * from "./domain/document.ts";
-export * from "./domain/errors.ts";
-export * from "./infrastructure/anthropic/anthropic-llm-client.ts";
-export * from "./infrastructure/fs/markdown-store.ts";
-export * from "./infrastructure/llm/create-llm-client.ts";
-export * from "./infrastructure/llm/document-prompt-factory.ts";
-export * from "./infrastructure/llm/document-schemas.ts";
-export * from "./infrastructure/logging/console-logger.ts";
-export * from "./infrastructure/openai/openai-llm-client.ts";
-export * from "./infrastructure/persistence/sqlite-document-run-repository.ts";
-export * from "./infrastructure/xai/xai-llm-client.ts";
-
 async function main(argv = Bun.argv.slice(2)): Promise<number> {
   const command = parseArgv(argv);
   const logger = new ConsoleLogger(command.request.verbose);
