@@ -3,7 +3,7 @@ import type { LlmClient } from "../ports/llm-client.ts";
 import type { Logger } from "../ports/logger.ts";
 import { buildExecutionBatches } from "./scheduler.ts";
 import { MarkdownStore } from "../../infrastructure/fs/markdown-store.ts";
-import { normalizeRequest, wordCount } from "../../domain/document.ts";
+import { normalizeRequest, normalizeReviewReport, wordCount } from "../../domain/document.ts";
 import type {
   DocumentRequest,
   GenerateResult,
@@ -64,11 +64,13 @@ export class DocumentAgent {
       this.repository.saveMergedDraft(documentId, edited);
       await this.log(documentId, "info", "editor", "문서 편집 완료", { words: wordCount(edited) });
 
-      let review = await this.llm.reviewDocument({
-        request: normalized,
-        plan,
-        markdown: edited,
-      });
+      let review = normalizeReviewReport(
+        await this.llm.reviewDocument({
+          request: normalized,
+          plan,
+          markdown: edited,
+        }),
+      );
       this.repository.saveReview(documentId, review);
       await this.log(documentId, "info", "reviewer", "리뷰 완료", {
         passed: review.passed,
@@ -96,11 +98,13 @@ export class DocumentAgent {
           conclusion,
         });
         this.repository.saveMergedDraft(documentId, edited);
-        review = await this.llm.reviewDocument({
-          request: normalized,
-          plan,
-          markdown: edited,
-        });
+        review = normalizeReviewReport(
+          await this.llm.reviewDocument({
+            request: normalized,
+            plan,
+            markdown: edited,
+          }),
+        );
         this.repository.saveReview(documentId, review);
       }
 

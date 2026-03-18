@@ -38,7 +38,8 @@ export const reviewSchema = z.object({
   passed: z.boolean(),
   issues: z.array(
     z.object({
-      sectionTitle: z.string().optional(),
+      // OpenAI-compatible structured outputs require required fields.
+      sectionTitle: z.string().nullable().default(null),
       severity: z.enum(["low", "medium", "high"]),
       message: z.string(),
       recommendation: z.string(),

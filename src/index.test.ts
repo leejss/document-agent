@@ -9,12 +9,14 @@ import type { LlmClient } from "./application/ports/llm-client.ts";
 import type { Logger } from "./application/ports/logger.ts";
 import { buildPlanDocumentPrompt } from "./infrastructure/llm/document-prompt-factory.ts";
 import { createLlmClient, resolveProvider } from "./infrastructure/llm/create-llm-client.ts";
+import { reviewSchema } from "./infrastructure/llm/document-schemas.ts";
 import type {
   DocumentPlan,
   DocumentRequest,
   ReviewReport,
   SectionDraft,
 } from "./domain/document.ts";
+import { normalizeReviewReport } from "./domain/document.ts";
 import { MarkdownStore } from "./infrastructure/fs/markdown-store.ts";
 import { SqliteDocumentRunRepository } from "./infrastructure/persistence/sqlite-document-run-repository.ts";
 
@@ -128,6 +130,42 @@ describe("prompt factory", () => {
   });
 });
 
+describe("structured schema compatibility", () => {
+  test("review schema는 sectionTitle 없이도 null 기본값으로 파싱된다", () => {
+    const parsed = reviewSchema.parse({
+      passed: false,
+      issues: [
+        {
+          severity: "medium",
+          message: "예시가 부족합니다.",
+          recommendation: "실행 예시를 추가하세요.",
+        },
+      ],
+      weakSections: [],
+      missingSections: [],
+      lengthViolations: [],
+      summary: "보강 필요",
+    });
+
+    expect(parsed.issues[0]?.sectionTitle).toBeNull();
+  });
+});
+
+describe("review normalization", () => {
+  test("weakSections가 있으면 passed=true라도 false로 보정한다", () => {
+    const normalized = normalizeReviewReport({
+      passed: true,
+      issues: [],
+      weakSections: ["결론"],
+      missingSections: [],
+      lengthViolations: [],
+      summary: "결론 보강 필요",
+    });
+
+    expect(normalized.passed).toBe(false);
+  });
+});
+
 describe("markdown patcher", () => {
   test("지정한 섹션만 치환한다", () => {
     const store = new MarkdownStore();
@@ -187,6 +225,34 @@ describe("orchestration and sqlite persistence", () => {
     const saved = repository.getDocumentRun(result.documentId);
     expect(saved?.status).toBe("completed");
     expect(saved?.finalMarkdown).toContain("# Planner Executor 설계 문서");
+  });
+
+  test("reviewer가 passed=true와 weakSections를 함께 반환해도 patch를 수행한다", async () => {
+    const directory = makeTempDir();
+    const outputPath = join(directory, "out", "doc.md");
+    const repository = new SqliteDocumentRunRepository(join(directory, "runs.sqlite"));
+    repository.initialize();
+    const logger = new MemoryLogger();
+    const llm = new InconsistentReviewLlmClient();
+    const service = new DocumentAgent(llm, repository, logger, new MarkdownStore());
+
+    const result = await service.generate({
+      prompt: "frontend hydration 설계 문서 작성",
+      format: "guide",
+      audience: "프론트엔드 엔지니어",
+      purpose: "설계 공유",
+      tone: "formal",
+      length: "medium",
+      requiredSections: [],
+      constraints: [],
+      outputPath,
+      stdout: false,
+      verbose: true,
+      parallel: "auto",
+    });
+
+    expect(llm.patchCalls).toBe(1);
+    expect(result.review.passed).toBe(true);
   });
 });
 
@@ -326,5 +392,37 @@ class FakeLlmClient implements LlmClient {
 
   async patchExistingSection(input: Parameters<LlmClient["patchExistingSection"]>[0]): Promise<string> {
     return `## ${input.sectionTitle}\n${"패치 ".repeat(80)}`;
+  }
+}
+
+class InconsistentReviewLlmClient extends FakeLlmClient {
+  override async reviewDocument(_: Parameters<LlmClient["reviewDocument"]>[0]): Promise<ReviewReport> {
+    this.reviewCalls += 1;
+    if (this.reviewCalls === 1) {
+      return {
+        passed: true,
+        issues: [
+          {
+            sectionTitle: "병렬 실행 전략",
+            severity: "medium",
+            message: "예시가 부족합니다.",
+            recommendation: "실행 배치 예시를 추가하세요.",
+          },
+        ],
+        weakSections: ["병렬 실행 전략"],
+        missingSections: [],
+        lengthViolations: [],
+        summary: "병렬 실행 전략 보강 필요",
+      };
+    }
+
+    return {
+      passed: true,
+      issues: [],
+      weakSections: [],
+      missingSections: [],
+      lengthViolations: [],
+      summary: "통과",
+    };
   }
 }
