@@ -3,10 +3,12 @@ import { rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { parseArgv } from "./application/services/cli-parser.ts";
-import { DocumentAgentService } from "./application/services/document-agent.ts";
+import { DocumentAgent } from "./application/services/document-agent.ts";
 import { buildExecutionBatches } from "./application/services/scheduler.ts";
 import type { LlmClient } from "./application/ports/llm-client.ts";
 import type { Logger } from "./application/ports/logger.ts";
+import { buildPlanDocumentPrompt } from "./infrastructure/llm/document-prompt-factory.ts";
+import { createLlmClient, resolveProvider } from "./infrastructure/llm/create-llm-client.ts";
 import type {
   DocumentPlan,
   DocumentRequest,
@@ -80,6 +82,52 @@ describe("scheduler", () => {
   });
 });
 
+describe("llm factory", () => {
+  test("provider를 해석한다", () => {
+    expect(resolveProvider("openai")).toBe("openai");
+    expect(resolveProvider("xai")).toBe("xai");
+    expect(resolveProvider("anthropic")).toBe("anthropic");
+    expect(resolveProvider(undefined)).toBe("openai");
+  });
+
+  test("환경변수에 따라 openai 클라이언트를 생성한다", () => {
+    const previousProvider = process.env.LLM_PROVIDER;
+    const previousKey = process.env.OPENAI_API_KEY;
+
+    process.env.LLM_PROVIDER = "openai";
+    process.env.OPENAI_API_KEY = "test-openai-key";
+
+    const client = createLlmClient();
+    expect(client.constructor.name).toBe("OpenAiLlmClient");
+
+    process.env.LLM_PROVIDER = previousProvider;
+    process.env.OPENAI_API_KEY = previousKey;
+  });
+});
+
+describe("prompt factory", () => {
+  test("plan 프롬프트에 핵심 요구사항을 포함한다", () => {
+    const prompt = buildPlanDocumentPrompt({
+      prompt: "planner-executor 설계 문서 작성",
+      format: "technical-design",
+      audience: "백엔드 엔지니어",
+      purpose: "설계 공유",
+      tone: "formal",
+      length: "medium",
+      requiredSections: ["문제 정의"],
+      constraints: ["코드 예시 포함"],
+      stdout: false,
+      verbose: false,
+      parallel: "auto",
+    });
+
+    expect(prompt).toContain("당신은 긴 기술 문서를 설계하는 planner다.");
+    expect(prompt).toContain("문서 형식: technical-design");
+    expect(prompt).toContain("반드시 포함할 섹션: 문제 정의");
+    expect(prompt).toContain("추가 제약: 코드 예시 포함");
+  });
+});
+
 describe("markdown patcher", () => {
   test("지정한 섹션만 치환한다", () => {
     const store = new MarkdownStore();
@@ -117,7 +165,7 @@ describe("orchestration and sqlite persistence", () => {
     repository.initialize();
     const logger = new MemoryLogger();
     const llm = new FakeLlmClient();
-    const service = new DocumentAgentService(llm, repository, logger, new MarkdownStore());
+    const service = new DocumentAgent(llm, repository, logger, new MarkdownStore());
 
     const result = await service.generate({
       prompt: "planner-executor 설계 문서 작성",

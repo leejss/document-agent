@@ -1,25 +1,30 @@
 #!/usr/bin/env bun
 
 import { parseArgv } from "./application/services/cli-parser.ts";
-import { DocumentAgentService } from "./application/services/document-agent.ts";
-import { AppError, ExternalDependencyError } from "./domain/errors.ts";
-import { ConsoleLogger } from "./infrastructure/logging/console-logger.ts";
+import { DocumentAgent } from "./application/services/document-agent.ts";
+import { AppError } from "./domain/errors.ts";
 import { MarkdownStore } from "./infrastructure/fs/markdown-store.ts";
-import { OpenAiLlmClient } from "./infrastructure/openai/openai-llm-client.ts";
+import { createLlmClient } from "./infrastructure/llm/create-llm-client.ts";
+import { ConsoleLogger } from "./infrastructure/logging/console-logger.ts";
 import { SqliteDocumentRunRepository } from "./infrastructure/persistence/sqlite-document-run-repository.ts";
 
+export * from "./application/ports/document-run-repository.ts";
 export * from "./application/ports/llm-client.ts";
 export * from "./application/ports/logger.ts";
-export * from "./application/ports/document-run-repository.ts";
 export * from "./application/services/cli-parser.ts";
 export * from "./application/services/document-agent.ts";
 export * from "./application/services/scheduler.ts";
 export * from "./domain/document.ts";
 export * from "./domain/errors.ts";
+export * from "./infrastructure/anthropic/anthropic-llm-client.ts";
 export * from "./infrastructure/fs/markdown-store.ts";
+export * from "./infrastructure/llm/create-llm-client.ts";
+export * from "./infrastructure/llm/document-prompt-factory.ts";
+export * from "./infrastructure/llm/document-schemas.ts";
 export * from "./infrastructure/logging/console-logger.ts";
 export * from "./infrastructure/openai/openai-llm-client.ts";
 export * from "./infrastructure/persistence/sqlite-document-run-repository.ts";
+export * from "./infrastructure/xai/xai-llm-client.ts";
 
 async function main(argv = Bun.argv.slice(2)): Promise<number> {
   const command = parseArgv(argv);
@@ -28,12 +33,8 @@ async function main(argv = Bun.argv.slice(2)): Promise<number> {
   repository.initialize();
   const markdownStore = new MarkdownStore();
 
-  if (!process.env.OPENAI_API_KEY) {
-    throw new ExternalDependencyError("OPENAI_API_KEY 가 설정되어 있지 않습니다.");
-  }
-
-  const llm = new OpenAiLlmClient(process.env.OPENAI_API_KEY);
-  const service = new DocumentAgentService(llm, repository, logger, markdownStore);
+  const llm = createLlmClient();
+  const service = new DocumentAgent(llm, repository, logger, markdownStore);
 
   if (command.kind === "generate") {
     const result = await service.generate(command.request);

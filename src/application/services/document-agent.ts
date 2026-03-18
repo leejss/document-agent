@@ -13,7 +13,7 @@ import type {
   SectionPlan,
 } from "../../domain/document.ts";
 
-export class DocumentAgentService {
+export class DocumentAgent {
   constructor(
     private readonly llm: LlmClient,
     private readonly repository: DocumentRunRepository,

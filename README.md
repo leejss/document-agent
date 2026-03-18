@@ -37,7 +37,8 @@ doc-agent patch ./out/react-guide.md --section "병렬 실행 전략"
 
 ```text
 CLI
-  -> OpenAI planner/executor/editor/reviewer
+  -> LLM provider(OpenAI | xAI | Anthropic)
+  -> planner/executor/editor/reviewer
   -> Markdown output
   -> SQLite state store
 ```
@@ -52,8 +53,22 @@ CLI
 
 | 이름 | 설명 |
 |---|---|
+| `LLM_PROVIDER` | 선택. `openai`, `xai`, `anthropic` 중 하나. 기본값은 `openai` |
 | `OPENAI_API_KEY` | 필수. OpenAI API 키 |
 | `OPENAI_MODEL` | 선택. 기본값은 `gpt-5.2` |
+| `XAI_API_KEY` | `LLM_PROVIDER=xai`일 때 필수 |
+| `XAI_MODEL` | 선택. 기본값은 `grok-4` |
+| `ANTHROPIC_API_KEY` | `LLM_PROVIDER=anthropic`일 때 필수 |
+| `ANTHROPIC_MODEL` | 선택. 기본값은 `claude-sonnet-4-20250514` |
+
+공급자 선택 흐름:
+
+```text
+LLM_PROVIDER
+  ├─ openai     -> OpenAI Responses API
+  ├─ xai        -> OpenAI 호환 API + https://api.x.ai/v1
+  └─ anthropic  -> Anthropic Messages API
+```
 
 ## 현재 상태
 
