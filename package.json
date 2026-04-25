@@ -1,18 +1,19 @@
 {
   "name": "document-agent",
   "bin": {
-    "doc-agent": "./src/index.ts"
+    "doc-agent": "./src/cli/index.ts"
   },
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "^1.3.13"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.79.0",
+    "effect": "^3.21.2",
     "openai": "^6.31.0",
     "zod": "^4.3.6",
     "zod-to-json-schema": "^3.25.1"
