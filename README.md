@@ -90,8 +90,7 @@ bun run src/cli/index.ts "ReAct 패턴 기술 문서 작성해줘" \
   --purpose "설계 판단에 필요한 근거 제공" \
   --tone formal \
   --length long \
-  --required-section "문제 정의" \
-  --required-section "아키텍처" \
+  --required-section "문제 정의,아키텍처" \
   --constraint "코드 예시 포함" \
   --parallel auto \
   --output ./out/react-guide.md
@@ -111,6 +110,26 @@ bun run src/cli/index.ts patch ./out/react-guide.md \
   --audience "플랫폼 엔지니어" \
   --length medium \
   --output ./out/react-guide-patched.md
+```
+
+### CLI 기본 기능
+
+`@effect/cli`가 제공하는 기본 기능:
+
+```bash
+# 도움말
+bun run src/cli/index.ts --help
+bun run src/cli/index.ts --help patch
+
+# 버전
+bun run src/cli/index.ts --version
+
+# Shell 자동완성 스크립트 생성
+bun run src/cli/index.ts --completions zsh
+bun run src/cli/index.ts --completions bash
+
+# 인터랙티브 Wizard 모드
+bun run src/cli/index.ts --wizard
 ```
 
 ## HTTP API 사용법
@@ -156,8 +175,8 @@ curl -X POST http://localhost:3000/patch \
 | `--purpose <value>` | 문서 목적 지정 |
 | `--tone <value>` | 문체/톤 지정 |
 | `--length <short\|medium\|long>` | 길이 힌트 지정 |
-| `--required-section <value>` | 반드시 포함할 섹션. 여러 번 사용 가능 |
-| `--constraint <value>` | 추가 제약 조건. 여러 번 사용 가능 |
+| `--required-section <value>` | 반드시 포함할 섹션. 콤마로 구분해 여러 개 지정 |
+| `--constraint <value>` | 추가 제약 조건. 콤마로 구분해 여러 개 지정 |
 | `--parallel <auto\|off>` | 섹션 병렬 실행 모드 |
 | `--output <path>` | 결과 Markdown 저장 경로 |
 | `--stdout` | 파일 저장 대신 stdout 출력 |
@@ -281,7 +300,8 @@ src
 | **Infrastructure** | `src/repo/sqlite.ts` | SQLite 실행 상태와 이력 저장 (Layer로 제공) |
 | **Infrastructure** | `src/store/local.ts` | 로컬 파일 시스템 Markdown 읽기/쓰기 (Layer로 제공) |
 | **Infrastructure** | `src/log/console.ts` | 콘솔 로그 출력 (Layer로 제공) |
-| **Transport** | `src/cli/index.ts` | CLI 명령 해석, Layer 조립, `Effect.runPromise` 실행 |
+| **Transport** | `src/cli/index.ts` | `@effect/cli` 기반 진입점, Layer 조립, `NodeRuntime.runMain` |
+| **Transport** | `src/cli/commands.ts` | `@effect/cli` Command/Args/Options 정의와 Effect 핸들러 |
 | **Transport** | `src/server/server.ts` | HTTP 요청 수신, Layer 조립, JSON 응답 |
 
 ### 생성 흐름 상세
