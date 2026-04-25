@@ -108,4 +108,23 @@ Then, run index.ts
 bun --hot ./index.ts
 ```
 
+## Effect-TS Architecture
+
+This project follows the opencode-style architecture: Core / Transport / Infrastructure separation.
+
+- **Core** (`src/agent/`, `src/document/`) must never import from `process`, `node:fs`, or any infrastructure implementation.
+- **Ports** (`src/llm/client.ts`, `src/repo/repository.ts`, `src/store/store.ts`, `src/log/logger.ts`) define services as `Context.Tag`.
+- **Infrastructure** (`src/llm/*.ts`, `src/repo/sqlite.ts`, `src/store/local.ts`, `src/log/console.ts`) provides implementations as Effect `Layer`.
+- **Transport** (`src/cli/`, `src/server/`) is the only layer that knows about `Bun.argv`, `process.exit`, `Bun.serve()`, etc.
+
+### Rules
+
+- Core files must only import from other Core files or Ports (interfaces).
+- Never import an infrastructure implementation into Core.
+- All async/side-effect operations must return `Effect.Effect<T, E>`.
+- Use `Effect.gen(function* () { ... yield* ... })` for sequential composition.
+- Use `Effect.all(..., { concurrency: ... })` for parallel composition.
+- Use `Layer.provideMerge()` to compose dependencies in Transport layer.
+- Use `Effect.runPromise()` or `Effect.runSync()` only in Transport layer.
+
 For more information, read the Bun API docs in `node_modules/bun-types/docs/**.mdx`.
