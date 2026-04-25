@@ -23,7 +23,7 @@ if (import.meta.main) {
     (code) => process.exit(code),
     (error: unknown) => {
       const resolved = normalizeError(error);
-      UI.error(resolved.message);
+      UI.error(formatError(resolved));
       process.exit(resolved.exitCode);
     },
   );
@@ -37,4 +37,15 @@ function normalizeError(error: unknown): AppError {
     return new AppError(error.message, 1, error);
   }
   return new AppError("알 수 없는 오류가 발생했습니다.", 1, error);
+}
+
+function formatError(error: unknown, depth = 0): string {
+  const indent = "  ".repeat(depth);
+  if (error instanceof AppError && error.cause) {
+    return `${indent}${error.message}\n${formatError(error.cause, depth + 1)}`;
+  }
+  if (error instanceof Error) {
+    return `${indent}${error.message}`;
+  }
+  return `${indent}${String(error)}`;
 }

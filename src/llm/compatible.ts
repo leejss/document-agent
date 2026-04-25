@@ -53,7 +53,7 @@ export abstract class OpenAiCompatibleClientBase {
     return Effect.tryPromise({
       try: () => this.planDocumentPromise(request),
       catch: (error) =>
-        error instanceof WorkflowError ? error : new ExternalDependencyError(`${this.providerLabel} plan 생성 실패`, error),
+        error instanceof WorkflowError || error instanceof ExternalDependencyError ? error : new ExternalDependencyError(`${this.providerLabel} plan 생성 실패`, error),
     });
   }
 
@@ -61,7 +61,7 @@ export abstract class OpenAiCompatibleClientBase {
     return Effect.tryPromise({
       try: () => this.retryOnce(() => this.generateSectionDraft(input.section.id, input.section.title, buildWriteSectionPrompt(input))),
       catch: (error) =>
-        error instanceof WorkflowError ? error : new ExternalDependencyError(`${this.providerLabel} 섹션 작성 실패`, error),
+        error instanceof WorkflowError || error instanceof ExternalDependencyError ? error : new ExternalDependencyError(`${this.providerLabel} 섹션 작성 실패`, error),
     });
   }
 
@@ -70,7 +70,7 @@ export abstract class OpenAiCompatibleClientBase {
     return Effect.tryPromise({
       try: () => this.generateSectionDraft(input.kind, title, buildWriteFramePrompt(input)),
       catch: (error) =>
-        error instanceof WorkflowError ? error : new ExternalDependencyError(`${this.providerLabel} 프레임 작성 실패`, error),
+        error instanceof WorkflowError || error instanceof ExternalDependencyError ? error : new ExternalDependencyError(`${this.providerLabel} 프레임 작성 실패`, error),
     });
   }
 
@@ -78,7 +78,7 @@ export abstract class OpenAiCompatibleClientBase {
     return Effect.tryPromise({
       try: () => this.generateMarkdown(buildEditDocumentPrompt(input)),
       catch: (error) =>
-        error instanceof WorkflowError ? error : new ExternalDependencyError(`${this.providerLabel} 문서 편집 실패`, error),
+        error instanceof WorkflowError || error instanceof ExternalDependencyError ? error : new ExternalDependencyError(`${this.providerLabel} 문서 편집 실패`, error),
     });
   }
 
@@ -86,7 +86,7 @@ export abstract class OpenAiCompatibleClientBase {
     return Effect.tryPromise({
       try: () => this.parseStructured(buildReviewDocumentPrompt(input), reviewSchema, "review_report"),
       catch: (error) =>
-        error instanceof WorkflowError ? error : new ExternalDependencyError(`${this.providerLabel} 리뷰 실패`, error),
+        error instanceof WorkflowError || error instanceof ExternalDependencyError ? error : new ExternalDependencyError(`${this.providerLabel} 리뷰 실패`, error),
     });
   }
 
@@ -97,7 +97,7 @@ export abstract class OpenAiCompatibleClientBase {
           this.generateSectionDraft(input.targetSection.id, input.targetSection.title, buildPatchSectionPrompt(input)),
         ),
       catch: (error) =>
-        error instanceof WorkflowError ? error : new ExternalDependencyError(`${this.providerLabel} 섹션 패치 실패`, error),
+        error instanceof WorkflowError || error instanceof ExternalDependencyError ? error : new ExternalDependencyError(`${this.providerLabel} 섹션 패치 실패`, error),
     });
   }
 
@@ -105,7 +105,7 @@ export abstract class OpenAiCompatibleClientBase {
     return Effect.tryPromise({
       try: () => this.generateMarkdown(buildPatchExistingSectionPrompt(input)),
       catch: (error) =>
-        error instanceof WorkflowError ? error : new ExternalDependencyError(`${this.providerLabel} 기존 섹션 패치 실패`, error),
+        error instanceof WorkflowError || error instanceof ExternalDependencyError ? error : new ExternalDependencyError(`${this.providerLabel} 기존 섹션 패치 실패`, error),
     });
   }
 
