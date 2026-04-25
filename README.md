@@ -2,20 +2,18 @@
 
 `document-agent`는 Bun 기반 CLI/HTTP 서버로 긴 Markdown 문서를 생성하거나, 기존 문서의 특정 섹션만 다시 작성할 수 있는 문서 작성 에이전트입니다.
 
-현재 구현은 **Effect-TS** 기반으로 "문서 계획 수립 -> 섹션 초안 작성 -> 문서 편집 -> 리뷰 -> 약한 섹션 보강" 흐름을 하나의 오케스트레이션 서비스로 묶은 MVP입니다. [opencode](https://github.com/anomalyco/opencode) 아키텍처 스타일을 참고하여 **core / transport / infrastructure** 3계층으로 분리되어 있습니다.
-
 ## 한눈에 보기
 
-| 항목 | 내용 |
-|---|---|
-| 실행 환경 | Bun |
-| 아키텍처 | opencode-style (Effect-TS 기반 Core/Transport/Infrastructure) |
-| 주요 기능 | 새 문서 생성, 기존 문서 섹션 patch |
-| 출력 형식 | Markdown |
-| 실행 상태 저장 | SQLite (`.document-agent/document-agent.sqlite`) |
-| 지원 LLM 공급자 | OpenAI, xAI, Anthropic |
-| CLI 진입점 | `src/cli/index.ts` |
-| HTTP 진입점 | `src/server/server.ts` |
+| 항목            | 내용                                                          |
+| --------------- | ------------------------------------------------------------- |
+| 실행 환경       | Bun                                                           |
+| 아키텍처        | opencode-style (Effect-TS 기반 Core/Transport/Infrastructure) |
+| 주요 기능       | 새 문서 생성, 기존 문서 섹션 patch                            |
+| 출력 형식       | Markdown                                                      |
+| 실행 상태 저장  | SQLite (`.document-agent/document-agent.sqlite`)              |
+| 지원 LLM 공급자 | OpenAI, xAI, Anthropic                                        |
+| CLI 진입점      | `src/cli/index.ts`                                            |
+| HTTP 진입점     | `src/server/server.ts`                                        |
 
 ```text
 사용자 요청
@@ -168,48 +166,48 @@ curl -X POST http://localhost:3000/patch \
 
 ### 생성 명령
 
-| 옵션 | 설명 |
-|---|---|
-| `--format <value>` | 문서 형식 지정 |
-| `--audience <value>` | 대상 독자 지정 |
-| `--purpose <value>` | 문서 목적 지정 |
-| `--tone <value>` | 문체/톤 지정 |
-| `--length <short\|medium\|long>` | 길이 힌트 지정 |
-| `--required-section <value>` | 반드시 포함할 섹션. 콤마로 구분해 여러 개 지정 |
-| `--constraint <value>` | 추가 제약 조건. 콤마로 구분해 여러 개 지정 |
-| `--parallel <auto\|off>` | 섹션 병렬 실행 모드 |
-| `--output <path>` | 결과 Markdown 저장 경로 |
-| `--stdout` | 파일 저장 대신 stdout 출력 |
-| `--verbose` | 상세 로그 출력 |
+| 옵션                             | 설명                                           |
+| -------------------------------- | ---------------------------------------------- |
+| `--format <value>`               | 문서 형식 지정                                 |
+| `--audience <value>`             | 대상 독자 지정                                 |
+| `--purpose <value>`              | 문서 목적 지정                                 |
+| `--tone <value>`                 | 문체/톤 지정                                   |
+| `--length <short\|medium\|long>` | 길이 힌트 지정                                 |
+| `--required-section <value>`     | 반드시 포함할 섹션. 콤마로 구분해 여러 개 지정 |
+| `--constraint <value>`           | 추가 제약 조건. 콤마로 구분해 여러 개 지정     |
+| `--parallel <auto\|off>`         | 섹션 병렬 실행 모드                            |
+| `--output <path>`                | 결과 Markdown 저장 경로                        |
+| `--stdout`                       | 파일 저장 대신 stdout 출력                     |
+| `--verbose`                      | 상세 로그 출력                                 |
 
 ### patch 명령
 
-| 옵션 | 설명 |
-|---|---|
-| `--section <title>` | 다시 작성할 섹션 제목. 필수 |
-| `--format <value>` | 추가 문맥 힌트 |
-| `--audience <value>` | 추가 독자 힌트 |
-| `--purpose <value>` | 추가 목적 힌트 |
-| `--tone <value>` | 추가 톤 힌트 |
-| `--length <short\|medium\|long>` | 패치 길이 힌트 |
-| `--required-section <value>` | 추가 제약 힌트. 여러 번 사용 가능 |
-| `--constraint <value>` | 추가 제약 힌트. 여러 번 사용 가능 |
-| `--parallel <auto\|off>` | patch 요청 구조상 허용되지만 기본값은 `off` |
-| `--output <path>` | 패치 결과 저장 경로. 생략 시 원본 덮어씀 |
-| `--stdout` | 결과 Markdown을 stdout으로 출력 |
-| `--verbose` | 상세 로그 출력 |
+| 옵션                             | 설명                                        |
+| -------------------------------- | ------------------------------------------- |
+| `--section <title>`              | 다시 작성할 섹션 제목. 필수                 |
+| `--format <value>`               | 추가 문맥 힌트                              |
+| `--audience <value>`             | 추가 독자 힌트                              |
+| `--purpose <value>`              | 추가 목적 힌트                              |
+| `--tone <value>`                 | 추가 톤 힌트                                |
+| `--length <short\|medium\|long>` | 패치 길이 힌트                              |
+| `--required-section <value>`     | 추가 제약 힌트. 여러 번 사용 가능           |
+| `--constraint <value>`           | 추가 제약 힌트. 여러 번 사용 가능           |
+| `--parallel <auto\|off>`         | patch 요청 구조상 허용되지만 기본값은 `off` |
+| `--output <path>`                | 패치 결과 저장 경로. 생략 시 원본 덮어씀    |
+| `--stdout`                       | 결과 Markdown을 stdout으로 출력             |
+| `--verbose`                      | 상세 로그 출력                              |
 
 ## 환경 변수
 
-| 이름 | 설명 |
-|---|---|
-| `LLM_PROVIDER` | `openai`, `xai`, `anthropic` 중 하나. 기본값은 `openai` |
-| `OPENAI_API_KEY` | `LLM_PROVIDER=openai`일 때 필수 |
-| `OPENAI_MODEL` | OpenAI 모델명. 기본값은 `gpt-5.2` |
-| `XAI_API_KEY` | `LLM_PROVIDER=xai`일 때 필수 |
-| `XAI_MODEL` | xAI 모델명. 기본값은 `grok-4` |
-| `ANTHROPIC_API_KEY` | `LLM_PROVIDER=anthropic`일 때 필수 |
-| `ANTHROPIC_MODEL` | Anthropic 모델명. 기본값은 `claude-sonnet-4-20250514` |
+| 이름                | 설명                                                    |
+| ------------------- | ------------------------------------------------------- |
+| `LLM_PROVIDER`      | `openai`, `xai`, `anthropic` 중 하나. 기본값은 `openai` |
+| `OPENAI_API_KEY`    | `LLM_PROVIDER=openai`일 때 필수                         |
+| `OPENAI_MODEL`      | OpenAI 모델명. 기본값은 `gpt-5.2`                       |
+| `XAI_API_KEY`       | `LLM_PROVIDER=xai`일 때 필수                            |
+| `XAI_MODEL`         | xAI 모델명. 기본값은 `grok-4`                           |
+| `ANTHROPIC_API_KEY` | `LLM_PROVIDER=anthropic`일 때 필수                      |
+| `ANTHROPIC_MODEL`   | Anthropic 모델명. 기본값은 `claude-sonnet-4-20250514`   |
 
 공급자 선택 흐름:
 
@@ -225,12 +223,12 @@ LLM_PROVIDER
 
 최종 산출물과 실행 상태는 서로 다른 저장소에 보관됩니다.
 
-| 저장 대상 | 저장 위치 | 설명 |
-|---|---|---|
-| 최종 문서 | Markdown 파일 | `--output` 경로 또는 patch 대상 경로 |
-| 실행 메타데이터 | SQLite `documents` | 요청, 상태, 플랜, 리뷰, 최종 문서 |
-| 섹션 초안 이력 | SQLite `section_runs` | 섹션별 draft와 patch 시도 기록 |
-| 단계 로그 | SQLite `job_logs` | planner/executor/editor/reviewer 단계 로그 |
+| 저장 대상       | 저장 위치             | 설명                                       |
+| --------------- | --------------------- | ------------------------------------------ |
+| 최종 문서       | Markdown 파일         | `--output` 경로 또는 patch 대상 경로       |
+| 실행 메타데이터 | SQLite `documents`    | 요청, 상태, 플랜, 리뷰, 최종 문서          |
+| 섹션 초안 이력  | SQLite `section_runs` | 섹션별 draft와 patch 시도 기록             |
+| 단계 로그       | SQLite `job_logs`     | planner/executor/editor/reviewer 단계 로그 |
 
 기본 DB 경로:
 
@@ -287,22 +285,22 @@ src
 
 ### 계층별 책임
 
-| 계층 | 주요 파일 | 책임 |
-|---|---|---|
-| **Core** | `src/agent/agent.ts` | 전체 생성/patch 워크플로우 오케스트레이션. 외부 환경을 전혀 모름 |
-| **Core** | `src/agent/scheduler.ts` | 섹션 dependency를 기준으로 실행 batch 계산 (순수 함수) |
-| **Core** | `src/document/*.ts` | 문서 생성에 필요한 타입, 기본값, 리뷰 보정, 공통 에러 |
-| **Port** | `src/llm/client.ts` | LLM 기능을 `Context.Tag`로 추상화 |
-| **Port** | `src/repo/repository.ts` | 실행 이력 저장을 `Context.Tag`로 추상화 |
-| **Port** | `src/store/store.ts` | Markdown 읽기/쓰기를 `Context.Tag`로 추상화 |
-| **Port** | `src/log/logger.ts` | 로깅을 `Context.Tag`로 추상화 |
-| **Infrastructure** | `src/llm/*.ts` | LLM 공급자별 API 연동과 프롬프트 생성 (Layer로 제공) |
-| **Infrastructure** | `src/repo/sqlite.ts` | SQLite 실행 상태와 이력 저장 (Layer로 제공) |
-| **Infrastructure** | `src/store/local.ts` | 로컬 파일 시스템 Markdown 읽기/쓰기 (Layer로 제공) |
-| **Infrastructure** | `src/log/console.ts` | 콘솔 로그 출력 (Layer로 제공) |
-| **Transport** | `src/cli/index.ts` | `@effect/cli` 기반 진입점, Layer 조립, `NodeRuntime.runMain` |
-| **Transport** | `src/cli/commands.ts` | `@effect/cli` Command/Args/Options 정의와 Effect 핸들러 |
-| **Transport** | `src/server/server.ts` | HTTP 요청 수신, Layer 조립, JSON 응답 |
+| 계층               | 주요 파일                | 책임                                                             |
+| ------------------ | ------------------------ | ---------------------------------------------------------------- |
+| **Core**           | `src/agent/agent.ts`     | 전체 생성/patch 워크플로우 오케스트레이션. 외부 환경을 전혀 모름 |
+| **Core**           | `src/agent/scheduler.ts` | 섹션 dependency를 기준으로 실행 batch 계산 (순수 함수)           |
+| **Core**           | `src/document/*.ts`      | 문서 생성에 필요한 타입, 기본값, 리뷰 보정, 공통 에러            |
+| **Port**           | `src/llm/client.ts`      | LLM 기능을 `Context.Tag`로 추상화                                |
+| **Port**           | `src/repo/repository.ts` | 실행 이력 저장을 `Context.Tag`로 추상화                          |
+| **Port**           | `src/store/store.ts`     | Markdown 읽기/쓰기를 `Context.Tag`로 추상화                      |
+| **Port**           | `src/log/logger.ts`      | 로깅을 `Context.Tag`로 추상화                                    |
+| **Infrastructure** | `src/llm/*.ts`           | LLM 공급자별 API 연동과 프롬프트 생성 (Layer로 제공)             |
+| **Infrastructure** | `src/repo/sqlite.ts`     | SQLite 실행 상태와 이력 저장 (Layer로 제공)                      |
+| **Infrastructure** | `src/store/local.ts`     | 로컬 파일 시스템 Markdown 읽기/쓰기 (Layer로 제공)               |
+| **Infrastructure** | `src/log/console.ts`     | 콘솔 로그 출력 (Layer로 제공)                                    |
+| **Transport**      | `src/cli/index.ts`       | `@effect/cli` 기반 진입점, Layer 조립, `NodeRuntime.runMain`     |
+| **Transport**      | `src/cli/commands.ts`    | `@effect/cli` Command/Args/Options 정의와 Effect 핸들러          |
+| **Transport**      | `src/server/server.ts`   | HTTP 요청 수신, Layer 조립, JSON 응답                            |
 
 ### 생성 흐름 상세
 
@@ -373,15 +371,15 @@ DocumentAgent.generate() [Effect Service]
 
 핵심 포인트:
 
-| 포인트 | 설명 |
-|---|---|
-| **Core 무환경** | `agent.ts`는 `process`, `console`, `fs`를 전혀 모름. 모든 외부 의존성은 Port(interface)로만 접근 |
-| **Effect DI** | `Context.Tag` + `Layer.provideMerge`로 구현체를 주입. 테스트 시 in-memory 구현체로 교체 가능 |
-| **병렬 실행** | `Effect.all(..., { concurrency: "unbounded" })`로 동시에 실행 가능한 섹션을 병렬 작성 |
-| **리뷰 보정** | 리뷰 결과가 `passed=true`여도 `weakSections`, `missingSections`, `lengthViolations`, high severity 이슈가 있으면 실패로 보정 |
-| **부분 보강** | 전체 문서를 처음부터 다시 쓰지 않고 약한 섹션만 재생성 |
-| **저장 분리** | Markdown 파일은 사용자 결과물, SQLite는 실행 추적 저장소 역할 |
-| **다중 Transport** | 동일한 Core를 CLI와 HTTP에서 모두 재사용 |
+| 포인트             | 설명                                                                                                                         |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| **Core 무환경**    | `agent.ts`는 `process`, `console`, `fs`를 전혀 모름. 모든 외부 의존성은 Port(interface)로만 접근                             |
+| **Effect DI**      | `Context.Tag` + `Layer.provideMerge`로 구현체를 주입. 테스트 시 in-memory 구현체로 교체 가능                                 |
+| **병렬 실행**      | `Effect.all(..., { concurrency: "unbounded" })`로 동시에 실행 가능한 섹션을 병렬 작성                                        |
+| **리뷰 보정**      | 리뷰 결과가 `passed=true`여도 `weakSections`, `missingSections`, `lengthViolations`, high severity 이슈가 있으면 실패로 보정 |
+| **부분 보강**      | 전체 문서를 처음부터 다시 쓰지 않고 약한 섹션만 재생성                                                                       |
+| **저장 분리**      | Markdown 파일은 사용자 결과물, SQLite는 실행 추적 저장소 역할                                                                |
+| **다중 Transport** | 동일한 Core를 CLI와 HTTP에서 모두 재사용                                                                                     |
 
 ### patch 흐름 상세
 
@@ -442,6 +440,7 @@ const appLayer = Agent.layer.pipe(
 기존에는 `MarkdownStore`가 infrastructure 구현체를 Core가 직접 import했습니다. 이제 `store/store.ts`에 `Context.Tag`로 Port를 정의하고 `store/local.ts`가 Layer로 구현합니다.
 
 이로 인해:
+
 - Core는 "파일 시스템에 저장한다"는 사실을 몰라도 됨
 - 나중에 S3, DB, 원격 API 저장소로 교체 가능
 - 테스트 시 in-memory 구현체 주입 가능
@@ -464,11 +463,11 @@ OpenAiCompatibleClientBase
 
 이 구조 덕분에:
 
-| 장점 | 설명 |
-|---|---|
-| 테스트 용이성 | 프롬프트 문자열 단위로 검증 가능 |
-| 공급자 독립성 | 프롬프트 정책과 API 호출 코드를 분리 |
-| 유지보수성 | 문서 품질 정책을 한 파일에서 관리 가능 |
+| 장점          | 설명                                   |
+| ------------- | -------------------------------------- |
+| 테스트 용이성 | 프롬프트 문자열 단위로 검증 가능       |
+| 공급자 독립성 | 프롬프트 정책과 API 호출 코드를 분리   |
+| 유지보수성    | 문서 품질 정책을 한 파일에서 관리 가능 |
 
 ## 테스트
 
@@ -486,20 +485,18 @@ const TestLayer = Layer.succeed(LlmClient, {
   // ...
 });
 
-const result = await Effect.runPromise(
-  program.pipe(Effect.provide(TestLayer))
-);
+const result = await Effect.runPromise(program.pipe(Effect.provide(TestLayer)));
 ```
 
 ## 문서 검증 체크리스트
 
 README를 수정하거나 기능을 추가할 때는 아래 항목을 같이 확인하는 것을 권장합니다.
 
-| 체크 항목 | 확인 방법 |
-|---|---|
-| CLI 옵션 문서가 실제 파서와 일치하는가 | `src/cli/parser.ts` 확인 |
-| 아키텍처 설명이 실제 계층 구조와 맞는가 | `src/agent/`, `src/llm/`, `src/repo/`, `src/store/`, `src/log/` 확인 |
-| 저장 구조 설명이 실제 DB 스키마와 맞는가 | `src/repo/sqlite.ts` 확인 |
-| 생성/patch 흐름 설명이 실제 메서드 순서와 맞는가 | `src/agent/agent.ts` 확인 |
-| HTTP API 문서가 실제 라우트와 일치하는가 | `src/server/server.ts` 확인 |
-| 환경변수 문서가 실제 layer.ts와 일치하는가 | `src/llm/layer.ts` 확인 |
+| 체크 항목                                        | 확인 방법                                                            |
+| ------------------------------------------------ | -------------------------------------------------------------------- |
+| CLI 옵션 문서가 실제 파서와 일치하는가           | `src/cli/parser.ts` 확인                                             |
+| 아키텍처 설명이 실제 계층 구조와 맞는가          | `src/agent/`, `src/llm/`, `src/repo/`, `src/store/`, `src/log/` 확인 |
+| 저장 구조 설명이 실제 DB 스키마와 맞는가         | `src/repo/sqlite.ts` 확인                                            |
+| 생성/patch 흐름 설명이 실제 메서드 순서와 맞는가 | `src/agent/agent.ts` 확인                                            |
+| HTTP API 문서가 실제 라우트와 일치하는가         | `src/server/server.ts` 확인                                          |
+| 환경변수 문서가 실제 layer.ts와 일치하는가       | `src/llm/layer.ts` 확인                                              |
