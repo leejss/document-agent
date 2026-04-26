@@ -177,5 +177,4 @@ const patch = Command.make(
     }),
 );
 
-// ─── 조합 ───
 export const app = generate.pipe(Command.withSubcommands([patch]));

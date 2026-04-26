@@ -6,10 +6,12 @@ import { Repository } from "./repository.ts";
 import type { DocumentPlan } from "../document/plan.ts";
 import type { ReviewReport } from "../document/review.ts";
 import type { SectionDraft } from "../document/draft.ts";
-import type { CreateDocumentRunInput, DocumentRunRecord } from "./repository.ts";
+import type { CreateDocumentRunInput } from "./repository.ts";
 import { FilePersistenceError } from "../error/error.ts";
 
-export function makeLayer(path = ".document-agent/document-agent.sqlite"): Layer.Layer<Repository> {
+export function makeLayer(
+  path = ".document-agent/document-agent.sqlite",
+): Layer.Layer<Repository> {
   return Layer.effect(
     Repository,
     Effect.sync(() => {
@@ -59,7 +61,8 @@ export function makeLayer(path = ".document-agent/document-agent.sqlite"): Layer
               );
             `);
           },
-          catch: (error) => new FilePersistenceError("SQLite 초기화 실패", error),
+          catch: (error) =>
+            new FilePersistenceError("SQLite 초기화 실패", error),
         });
 
       const createDocumentRun = (input: CreateDocumentRunInput) =>
@@ -82,7 +85,8 @@ export function makeLayer(path = ".document-agent/document-agent.sqlite"): Layer
                 now,
               );
           },
-          catch: (error) => new FilePersistenceError("실행 레코드 생성 실패", error),
+          catch: (error) =>
+            new FilePersistenceError("실행 레코드 생성 실패", error),
         });
 
       const savePlan = (documentId: string, plan: DocumentPlan) =>
@@ -97,7 +101,11 @@ export function makeLayer(path = ".document-agent/document-agent.sqlite"): Layer
           catch: (error) => new FilePersistenceError("계획 저장 실패", error),
         });
 
-      const saveSectionDraft = (documentId: string, draft: SectionDraft, attempt: number) =>
+      const saveSectionDraft = (
+        documentId: string,
+        draft: SectionDraft,
+        attempt: number,
+      ) =>
         Effect.try({
           try: () => {
             database
@@ -117,7 +125,8 @@ export function makeLayer(path = ".document-agent/document-agent.sqlite"): Layer
                 new Date().toISOString(),
               );
           },
-          catch: (error) => new FilePersistenceError("섹션 초안 저장 실패", error),
+          catch: (error) =>
+            new FilePersistenceError("섹션 초안 저장 실패", error),
         });
 
       const saveMergedDraft = (documentId: string, markdown: string) =>
@@ -128,7 +137,8 @@ export function makeLayer(path = ".document-agent/document-agent.sqlite"): Layer
               updated_at: new Date().toISOString(),
             });
           },
-          catch: (error) => new FilePersistenceError("병합 초안 저장 실패", error),
+          catch: (error) =>
+            new FilePersistenceError("병합 초안 저장 실패", error),
         });
 
       const saveReview = (documentId: string, review: ReviewReport) =>
@@ -156,12 +166,24 @@ export function makeLayer(path = ".document-agent/document-agent.sqlite"): Layer
                 `INSERT INTO job_logs (document_id, level, stage, message, payload_json, created_at)
                  VALUES (?, ?, ?, ?, ?, ?)`,
               )
-              .run(documentId, level, stage, message, payload ? JSON.stringify(payload) : null, new Date().toISOString());
+              .run(
+                documentId,
+                level,
+                stage,
+                message,
+                payload ? JSON.stringify(payload) : null,
+                new Date().toISOString(),
+              );
           },
           catch: (error) => new FilePersistenceError("로그 저장 실패", error),
         });
 
-      const completeDocument = (documentId: string, title: string, markdown: string, outputPath?: string) =>
+      const completeDocument = (
+        documentId: string,
+        title: string,
+        markdown: string,
+        outputPath?: string,
+      ) =>
         Effect.try({
           try: () => {
             updateDocument(documentId, {
@@ -172,7 +194,8 @@ export function makeLayer(path = ".document-agent/document-agent.sqlite"): Layer
               updated_at: new Date().toISOString(),
             });
           },
-          catch: (error) => new FilePersistenceError("문서 완료 저장 실패", error),
+          catch: (error) =>
+            new FilePersistenceError("문서 완료 저장 실패", error),
         });
 
       const markFailed = (documentId: string, message: string) =>
@@ -187,7 +210,13 @@ export function makeLayer(path = ".document-agent/document-agent.sqlite"): Layer
                 `INSERT INTO job_logs (document_id, level, stage, message, created_at)
                  VALUES (?, ?, ?, ?, ?)`,
               )
-              .run(documentId, "error", "workflow", message, new Date().toISOString());
+              .run(
+                documentId,
+                "error",
+                "workflow",
+                message,
+                new Date().toISOString(),
+              );
           },
           catch: (error) => new FilePersistenceError("실패 마킹 실패", error),
         });
@@ -220,14 +249,20 @@ export function makeLayer(path = ".document-agent/document-agent.sqlite"): Layer
               finalMarkdown: row.final_markdown ?? undefined,
             };
           },
-          catch: (error) => new FilePersistenceError("실행 레코드 조회 실패", error),
+          catch: (error) =>
+            new FilePersistenceError("실행 레코드 조회 실패", error),
         });
 
-      function updateDocument(documentId: string, values: Record<string, string | null>): void {
+      function updateDocument(
+        documentId: string,
+        values: Record<string, string | null>,
+      ): void {
         const entries = Object.entries(values);
         const assignments = entries.map(([key]) => `${key} = ?`).join(", ");
         const params = entries.map(([, value]) => value);
-        database.query(`UPDATE documents SET ${assignments} WHERE id = ?`).run(...params, documentId);
+        database
+          .query(`UPDATE documents SET ${assignments} WHERE id = ?`)
+          .run(...params, documentId);
       }
 
       return {
