@@ -1,7 +1,17 @@
+import { Effect } from "effect";
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
-import { z } from "zod";
-import { Effect } from "effect";
+import type { z } from "zod";
+import type { SectionDraft } from "../document/draft.ts";
+import type { DocumentPlan } from "../document/plan.ts";
+import type { DocumentRequest } from "../document/request.ts";
+import {
+	estimateSectionMinWords,
+	normalizeRequest,
+} from "../document/request.ts";
+import type { ReviewReport } from "../document/review.ts";
+import { wordCount } from "../document/util.ts";
+import { ExternalDependencyError, WorkflowError } from "../error/error.ts";
 import type {
 	EditDocumentInput,
 	PatchExistingDocumentInput,
@@ -10,16 +20,6 @@ import type {
 	WriteFrameInput,
 	WriteSectionInput,
 } from "./client.ts";
-import type { DocumentPlan, SectionPlan } from "../document/plan.ts";
-import type { DocumentRequest } from "../document/request.ts";
-import type { ReviewReport } from "../document/review.ts";
-import type { SectionDraft } from "../document/draft.ts";
-import {
-	estimateSectionMinWords,
-	normalizeRequest,
-} from "../document/request.ts";
-import { wordCount } from "../document/util.ts";
-import { ExternalDependencyError, WorkflowError } from "../error/error.ts";
 import {
 	buildEditDocumentPrompt,
 	buildPatchExistingSectionPrompt,

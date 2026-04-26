@@ -3,8 +3,8 @@
 import { Command } from "@effect/cli";
 import { NodeContext, NodeRuntime } from "@effect/platform-node";
 import { Console, Effect } from "effect";
-import { app } from "./commands.ts";
 import { AppError } from "../error/error.ts";
+import { app } from "./commands.ts";
 
 const cli = Command.run(app, {
 	name: "document-agent",

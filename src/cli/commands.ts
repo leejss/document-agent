@@ -1,12 +1,12 @@
 import { Args, Command, Options } from "@effect/cli";
-import { Effect, Layer, Console } from "effect";
+import { Console, Effect, Layer } from "effect";
 import * as Option from "effect/Option";
 import { Agent } from "../agent/agent.ts";
 import { layer as llmLayer } from "../llm/layer.ts";
-import { layer as storeLayer } from "../store/local.ts";
-import { makeLayer as makeRepoLayer } from "../repo/sqlite.ts";
 import { makeLayer as makeLogLayer } from "../log/console.ts";
 import { Repository } from "../repo/repository.ts";
+import { makeLayer as makeRepoLayer } from "../repo/sqlite.ts";
+import { layer as storeLayer } from "../store/local.ts";
 
 // ─── 공통 옵션 ───
 const format = Options.text("format").pipe(Options.optional);

@@ -2,12 +2,12 @@ import { Database } from "bun:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { Effect, Layer } from "effect";
-import { Repository } from "./repository.ts";
+import type { SectionDraft } from "../document/draft.ts";
 import type { DocumentPlan } from "../document/plan.ts";
 import type { ReviewReport } from "../document/review.ts";
-import type { SectionDraft } from "../document/draft.ts";
-import type { CreateDocumentRunInput } from "./repository.ts";
 import { FilePersistenceError } from "../error/error.ts";
+import type { CreateDocumentRunInput } from "./repository.ts";
+import { Repository } from "./repository.ts";
 
 export function makeLayer(
 	path = ".document-agent/document-agent.sqlite",

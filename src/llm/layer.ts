@@ -1,9 +1,9 @@
-import { Layer } from "effect";
-import { Client } from "./client.ts";
+import type { Layer } from "effect";
 import { ExternalDependencyError } from "../error/error.ts";
+import * as Anthropic from "./anthropic.ts";
+import type { Client } from "./client.ts";
 import * as OpenAi from "./openai.ts";
 import * as XAi from "./xai.ts";
-import * as Anthropic from "./anthropic.ts";
 
 export type LlmProvider = "openai" | "xai" | "anthropic";
 

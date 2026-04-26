@@ -1,7 +1,7 @@
-import { Context, Effect } from "effect";
+import { Context, type Effect } from "effect";
+import type { SectionDraft } from "../document/draft.ts";
 import type { DocumentPlan } from "../document/plan.ts";
 import type { DocumentRequest } from "../document/request.ts";
-import type { SectionDraft } from "../document/draft.ts";
 import type { ReviewReport } from "../document/review.ts";
 import type { FilePersistenceError } from "../error/error.ts";
 

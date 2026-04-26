@@ -1,4 +1,4 @@
-import { Context, Effect } from "effect";
+import { Context, type Effect } from "effect";
 import type { HeadingSection } from "../document/section.ts";
 import type { FilePersistenceError, InputError } from "../error/error.ts";
 

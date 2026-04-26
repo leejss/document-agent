@@ -1,5 +1,5 @@
-import type { ParallelMode } from "../document/request.ts";
 import type { SectionPlan } from "../document/plan.ts";
+import type { ParallelMode } from "../document/request.ts";
 import { WorkflowError } from "../error/error.ts";
 
 export function buildExecutionBatches(

@@ -1,6 +1,6 @@
 import { Effect, Layer } from "effect";
-import { Logger } from "./logger.ts";
 import type { LogLevel } from "../document/request.ts";
+import { Logger } from "./logger.ts";
 
 export function makeLayer(verbose: boolean): Layer.Layer<Logger> {
 	return Layer.succeed(Logger, {
@@ -33,7 +33,6 @@ function prefix(level: LogLevel): string {
 			return "[warn]";
 		case "error":
 			return "[error]";
-		case "info":
 		default:
 			return "[info]";
 	}

@@ -38,7 +38,6 @@ export function buildLengthPolicy(length: LengthLevel): string {
 			return "각 섹션은 핵심 설명 중심으로 최소 180단어 이상 작성한다.";
 		case "long":
 			return "각 섹션은 예시와 비교를 포함해 최소 420단어 이상 작성한다.";
-		case "medium":
 		default:
 			return "각 섹션은 설명과 예시를 포함해 최소 280단어 이상 작성한다.";
 	}
@@ -50,7 +49,6 @@ export function estimateSectionMinWords(length: LengthLevel): number {
 			return 180;
 		case "long":
 			return 420;
-		case "medium":
 		default:
 			return 280;
 	}

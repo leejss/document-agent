@@ -1,7 +1,7 @@
 import { Effect, Layer } from "effect";
-import { Store } from "./store.ts";
 import type { HeadingSection } from "../document/section.ts";
 import { FilePersistenceError, InputError } from "../error/error.ts";
+import { Store } from "./store.ts";
 
 export const layer = Layer.effect(
 	Store,
@@ -56,11 +56,9 @@ export const layer = Layer.effect(
 		): Effect.Effect<string, InputError> =>
 			Effect.sync(() => {
 				const section = extractSectionSync(markdown, sectionTitle);
-				return (
-					`${markdown.slice(0, section.start)}${replacementMarkdown.trim()}\n\n${markdown
-						.slice(section.end)
-						.replace(/^\s+/, "")}`.trimEnd() + "\n"
-				);
+				return `${`${markdown.slice(0, section.start)}${replacementMarkdown.trim()}\n\n${markdown
+					.slice(section.end)
+					.replace(/^\s+/, "")}`.trimEnd()}\n`;
 			});
 
 		return {

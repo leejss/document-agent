@@ -1,3 +1,7 @@
+import type { SectionPlan } from "../document/plan.ts";
+import type { DocumentRequest } from "../document/request.ts";
+import { buildLengthPolicy, normalizeRequest } from "../document/request.ts";
+import type { ReviewReport } from "../document/review.ts";
 import type {
 	EditDocumentInput,
 	PatchExistingDocumentInput,
@@ -6,10 +10,6 @@ import type {
 	WriteFrameInput,
 	WriteSectionInput,
 } from "./client.ts";
-import type { SectionPlan } from "../document/plan.ts";
-import type { DocumentRequest } from "../document/request.ts";
-import type { ReviewReport } from "../document/review.ts";
-import { buildLengthPolicy, normalizeRequest } from "../document/request.ts";
 
 export function buildPlanDocumentPrompt(request: DocumentRequest): string {
 	const normalized = normalizeRequest(request);

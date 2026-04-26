@@ -1,26 +1,26 @@
 import { Context, Effect, Layer } from "effect";
-import type { DocumentRequest } from "../document/request.ts";
-import type { DocumentPlan, SectionPlan } from "../document/plan.ts";
 import type { SectionDraft } from "../document/draft.ts";
-import type { ReviewReport } from "../document/review.ts";
+import type { DocumentPlan, SectionPlan } from "../document/plan.ts";
+import type { DocumentRequest } from "../document/request.ts";
 import { normalizeRequest } from "../document/request.ts";
-import { wordCount } from "../document/util.ts";
+import type { ReviewReport } from "../document/review.ts";
 import { normalizeReviewReport } from "../document/review.ts";
-import { buildExecutionBatches } from "./scheduler.ts";
+import { wordCount } from "../document/util.ts";
+import type {
+	DocumentAgentError,
+	FilePersistenceError,
+} from "../error/error.ts";
 import {
 	Client as LlmClient,
 	type Interface as LlmClientInterface,
 } from "../llm/client.ts";
+import { Logger, type Interface as LoggerInterface } from "../log/logger.ts";
 import {
 	Repository,
 	type Interface as RepositoryInterface,
 } from "../repo/repository.ts";
 import { Store } from "../store/store.ts";
-import { Logger, type Interface as LoggerInterface } from "../log/logger.ts";
-import type {
-	DocumentAgentError,
-	FilePersistenceError,
-} from "../error/error.ts";
+import { buildExecutionBatches } from "./scheduler.ts";
 
 export interface GenerateResult {
 	documentId: string;

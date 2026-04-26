@@ -1,8 +1,17 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
-import { z } from "zod";
 import { Effect, Layer } from "effect";
-import { Client } from "./client.ts";
+import type { z } from "zod";
+import type { SectionDraft } from "../document/draft.ts";
+import type { DocumentPlan } from "../document/plan.ts";
+import type { DocumentRequest } from "../document/request.ts";
+import {
+	estimateSectionMinWords,
+	normalizeRequest,
+} from "../document/request.ts";
+import type { ReviewReport } from "../document/review.ts";
+import { wordCount } from "../document/util.ts";
+import { ExternalDependencyError, WorkflowError } from "../error/error.ts";
 import type {
 	EditDocumentInput,
 	PatchExistingDocumentInput,
@@ -11,16 +20,7 @@ import type {
 	WriteFrameInput,
 	WriteSectionInput,
 } from "./client.ts";
-import type { DocumentPlan } from "../document/plan.ts";
-import type { DocumentRequest } from "../document/request.ts";
-import type { ReviewReport } from "../document/review.ts";
-import type { SectionDraft } from "../document/draft.ts";
-import {
-	estimateSectionMinWords,
-	normalizeRequest,
-} from "../document/request.ts";
-import { wordCount } from "../document/util.ts";
-import { ExternalDependencyError, WorkflowError } from "../error/error.ts";
+import { Client } from "./client.ts";
 import {
 	buildEditDocumentPrompt,
 	buildPatchExistingSectionPrompt,
